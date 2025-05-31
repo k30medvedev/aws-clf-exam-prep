@@ -2,6 +2,8 @@
 
 📚 This project contains resources and tools to help prepare for the AWS Certified Cloud Practitioner (CLF-C02) exam.
 
+<img src="assets/screenshot.png" width="600" alt="Preview">
+
 ## 🧰 Project Structure
 
 - `exams/` — Practice exams in markdown format.
