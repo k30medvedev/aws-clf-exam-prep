@@ -31,9 +31,3 @@
 
 All dependencies are in `requirements.txt`. They will be installed automatically using `install_env.bat`.
 
----
-
-### ✅ `.gitignore`
-
-Сохрани как `.gitignore`:
-
