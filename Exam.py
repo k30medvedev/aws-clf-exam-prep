@@ -49,7 +49,7 @@ except FileNotFoundError:
 
 st.title(f"📘 AWS Certified Cloud Practitioner Practice Exam  (v{version})")
 
-# Язык объяснений
+# Choose English or Russian
 if "prompt_lang" not in st.session_state:
     st.session_state.prompt_lang = "English"
 
@@ -98,7 +98,7 @@ if current < len(questions):
         selected_opt = st.radio("Select one answer:", q["options"], key=current)
         selected_letters.append(selected_opt.split(".")[0])
 
-    # КНОПКА SUBMIT СРАЗУ ПОД ВАРИАНТАМИ
+    # BUTTON SUBMIT
     if st.button("Submit Answer"):
         correct_set = set(q["correct"])
         user_set = set(selected_letters)
@@ -116,16 +116,14 @@ if current < len(questions):
         st.session_state.current += 1
         st.rerun()
 
-    # PROMPT после вопроса
+    # PROMPT to ask chatGPT
     st.markdown("---")
     st.markdown("**Need help understanding this question?**")
 
     opts_text = "\n".join(q["options"])
     if st.session_state.prompt_lang == "Russian":
         instant_prompt = f"""Ты являешься экспертом AWS, готовящим студента к экзамену AWS-Certified-Cloud-Practitioner (CLF-C02).
-
 Пожалуйста, объясни следующий экзаменационный вопрос: почему правильные ответы являются верными, а остальные — нет.
-
 Вопрос:
 {q['question']}
 
@@ -137,7 +135,6 @@ if current < len(questions):
 Объясни понятно, подробно и с пояснениями. Приводи примеры, если уместно."""
     else:
         instant_prompt = f"""You are an AWS expert preparing a student for the AWS-Certified-Cloud-Practitioner (CLF-C02) exam.
-
 Please explain the following exam question and why the correct answers are correct (and others incorrect).
 
 Question:
@@ -162,7 +159,6 @@ Give a clear and detailed explanation with reasoning and practical examples if p
         </script>
     """, height=50)
 
-# ФИНАЛ
 else:
     st.success("✅ Exam Completed!")
     total = len(questions)
@@ -211,7 +207,7 @@ else:
         st.markdown(f"[💬 Ask ChatGPT for explanation]({chat_url})", unsafe_allow_html=True)
         st.markdown("---")
 
-    # ТОЛЬКО В КОНЦЕ
+    # Restart button
     if st.button("Restart Exam"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
