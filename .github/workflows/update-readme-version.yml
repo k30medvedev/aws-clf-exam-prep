@@ -1,0 +1,29 @@
+name: Update README Version
+
+on:
+  push:
+    paths:
+      - version.txt
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run version updater
+        run: |
+          python update_readme_version.py
+
+      - name: Commit and push if README changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git diff --quiet README.md || (git add README.md && git commit -m "🔄 Sync version from version.txt" && git push)
