@@ -166,7 +166,7 @@ else:
     percent = (correct / total) * 100
     st.write(f"**Correct answers:** {correct} / {total}")
     st.write(f"**Percentage:** {percent:.2f}%")
-    if percent >= 70:
+    if percent >= 80:
         st.success("🎉 You passed the exam!")
     else:
         st.warning("❌ You did not reach the passing score (70%).")
