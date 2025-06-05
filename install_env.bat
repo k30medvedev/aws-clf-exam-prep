@@ -9,5 +9,5 @@ echo [3/3] Installing dependencies...
 pip install --upgrade pip
 pip install -r requirements.txt
 
-echo All dependencies installed. You can now start the app using start_app.bat
+echo All dependencies installed. You can now start the app using start.bat
 pause
