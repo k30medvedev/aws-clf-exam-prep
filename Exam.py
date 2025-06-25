@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 import urllib.parse
 import streamlit as st
 import streamlit.components.v1 as components
@@ -70,15 +70,7 @@ if "questions" not in st.session_state or st.session_state.get("last_exam") != s
     st.session_state.score = 0
     st.session_state.answers = []
     st.session_state.last_exam = selected_exam_file
-    st.session_state.start_time = datetime.now()
-    st.session_state.end_time = st.session_state.start_time + timedelta(minutes=90)
-
-remaining = st.session_state.end_time - datetime.now()
-if remaining.total_seconds() > 0:
-    st.info(f"⏱ Time remaining: {str(remaining).split('.')[0]}")
-else:
-    st.error("⏰ Time is up! Exam has ended.")
-    st.session_state.current = len(st.session_state.questions)
+    st.session_state.show_answer = False
 
 questions = st.session_state.questions
 current = st.session_state.current
@@ -98,7 +90,15 @@ if current < len(questions):
         selected_opt = st.radio("Select one answer:", q["options"], key=current)
         selected_letters.append(selected_opt.split(".")[0])
 
-    # BUTTON SUBMIT
+    # Safe Show Answer inside expander
+    with st.expander("⚠️ Need a hint or want to peek the correct answer? (Click to expand)"):
+        if st.button("👁 Show Answer"):
+            st.session_state.show_answer = True
+
+    if st.session_state.get("show_answer", False):
+        st.markdown(f"💡 **Correct answer:** {', '.join(q['correct'])}")
+
+    # Submit button
     if st.button("Submit Answer"):
         correct_set = set(q["correct"])
         user_set = set(selected_letters)
@@ -114,6 +114,7 @@ if current < len(questions):
             "is_correct": is_correct
         })
         st.session_state.current += 1
+        st.session_state.show_answer = False
         st.rerun()
 
     # PROMPT to ask chatGPT
@@ -207,7 +208,6 @@ else:
         st.markdown(f"[💬 Ask ChatGPT for explanation]({chat_url})", unsafe_allow_html=True)
         st.markdown("---")
 
-    # Restart button
     if st.button("Restart Exam"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
