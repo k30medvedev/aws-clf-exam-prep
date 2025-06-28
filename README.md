@@ -1,7 +1,7 @@
 # AWS CLF-C02 Exam Preparation
 
 📚 This project contains resources and tools to help prepare for the AWS Certified Cloud Practitioner (CLF-C02) exam.
-📦 Version: 0.3.3
+📦 Version: 0.3.4
 
 Deployed on cloud:
 https://github.com/enhorse/java-interview?tab=readme-ov-file
