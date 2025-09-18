@@ -1,7 +1,7 @@
 # AWS CLF-C02 Exam Preparation
 
 📚 This project contains resources and tools to help prepare for the AWS Certified Cloud Practitioner (CLF-C02) exam.
-📦 Version: 0.3.4
+📦 Version: 0.3.5
 
 Deployed on cloud:
 https://github.com/enhorse/java-interview?tab=readme-ov-file
@@ -24,13 +24,13 @@ https://github.com/enhorse/java-interview?tab=readme-ov-file
 1. Install the environment:
 
     ```bash
-    install_env.bat
+    .\install_env.bat
     ```
 
 2. Start the application:
 
     ```bash
-    start.bat
+    .\start.bat
     ```
 
 ## 🧪 Requirements
