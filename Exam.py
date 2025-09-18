@@ -15,6 +15,7 @@ from core import (
     LANGS,
 )
 
+
 # ========================= Caching & IO ========================= #
 
 @st.cache_data(show_spinner=False)
@@ -26,10 +27,12 @@ def load_exam_files(exam_folder: Path) -> List[str]:
         key=lambda s: int(re.search(r"(\d+)", s).group(1)) if re.search(r"(\d+)", s) else 0,
     )
 
+
 @st.cache_resource(show_spinner=False)
 def load_questions(path: Path) -> List[Question]:
     text = path.read_text(encoding="utf-8")
     return parse_exam(text)
+
 
 # ========================= UI ========================= #
 
@@ -51,6 +54,50 @@ def main():
             st.error("The exams folder is empty or missing. Add .md files with exams.")
             st.stop()
         selected_file = st.selectbox("Exam file", files)
+
+    # ===== Bug report banner & floating action button =====
+    REPO = "https://github.com/k30medvedev/aws-clf-exam-prep"
+
+    def make_bug_url(version_str: str, exam_file: str) -> str:
+        title = f"[bug] v{version_str} · {exam_file}"
+        body = f"""**Version**: v{version_str}
+**Exam file**: {exam_file}
+
+**Steps to reproduce**
+1.
+2.
+
+**Expected**
+-
+
+**Actual**
+-
+
+**Screenshots / logs**
+-"""
+        return (
+            f"{REPO}/issues/new"
+            f"?labels=bug"
+            f"&title={urllib.parse.quote_plus(title)}"
+            f"&body={urllib.parse.quote_plus(body)}"
+        )
+
+    bug_url = make_bug_url(version, selected_file)
+
+    st.info(f"🐞 Found a typo or bug? [Create an issue]({bug_url}) — it takes a minute.")
+
+    components.html(f"""
+    <style>
+    .bug-fab {{
+      position: fixed; right: 18px; bottom: 18px; z-index: 9999;
+      background: #ef4444; color: #fff; padding: 10px 14px; border-radius: 9999px;
+      font: 600 14px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+      box-shadow: 0 6px 16px rgba(0,0,0,.2); text-decoration: none;
+    }}
+    .bug-fab:hover {{ opacity:.92 }}
+    </style>
+    <a class="bug-fab" href="{bug_url}" target="_blank" rel="noopener">🐞 Report a bug</a>
+    """, height=0)
 
     # Init state on file change
     if st.session_state.get("last_exam") != selected_file:
@@ -246,6 +293,7 @@ def main():
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
+
 
 if __name__ == "__main__":
     main()

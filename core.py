@@ -25,7 +25,6 @@ QUESTION_BLOCK_RE = re.compile(
     r"(\d+)\.\s*(.*?)\n(.*?)<details[^>]*?>\s*<summary[^>]*?>\s*Answer\s*</summary>(.*?)</details>",
     re.DOTALL | re.IGNORECASE,
 )
-# Берём только СТРОКУ после "Correct answer:" (а не весь details-блок)
 CORRECT_LINE_RE = re.compile(
     r"^\s*Correct\s*answer\s*:\s*(.+)$",
     re.IGNORECASE | re.MULTILINE,
@@ -50,11 +49,6 @@ def parse_options(options_raw: str) -> List[Option]:
 
 
 def _extract_correct_letters(details_raw: str, allowed: set[str]) -> List[str]:
-    """
-    Берём ТОЛЬКО строку после 'Correct answer:' и вытягиваем буквы,
-    которые реально есть среди вариантов (allowed). Сохраняем порядок, убираем дубли.
-    Поддерживает форматы вида: 'A, C', 'A C', 'AC', 'A and C'.
-    """
     m = CORRECT_LINE_RE.search(details_raw)
     line = m.group(1) if m else details_raw  # fallback — но дальше фильтруем по allowed
     letters = [ch.upper() for ch in re.findall(r"[A-Za-z]", line)]
