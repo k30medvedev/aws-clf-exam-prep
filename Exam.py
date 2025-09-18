@@ -15,7 +15,6 @@ from core import (
     LANGS,
 )
 
-
 # ========================= Caching & IO ========================= #
 
 @st.cache_data(show_spinner=False)
@@ -27,12 +26,10 @@ def load_exam_files(exam_folder: Path) -> List[str]:
         key=lambda s: int(re.search(r"(\d+)", s).group(1)) if re.search(r"(\d+)", s) else 0,
     )
 
-
 @st.cache_resource(show_spinner=False)
 def load_questions(path: Path) -> List[Question]:
     text = path.read_text(encoding="utf-8")
     return parse_exam(text)
-
 
 # ========================= UI ========================= #
 
@@ -65,7 +62,6 @@ def main():
         st.session_state.last_exam = selected_file
         st.session_state.show_answer = False
         st.session_state.selections = {}  # question_number -> list[str]
-        st.session_state.hk = ""
 
     questions: List[Question] = st.session_state.get("questions", [])
     if not questions:
@@ -73,9 +69,6 @@ def main():
         st.stop()
 
     current = st.session_state.current
-
-    # Hidden input for hotkeys (used by JS)
-    _ = st.text_input("Hotkey", st.session_state.get("hk", ""), key="hk", label_visibility="collapsed")
 
     # Progress + restart
     a, b = st.columns([3, 1])
@@ -167,56 +160,6 @@ def main():
         if submit:
             do_submit(selected_letters)
 
-        # Hotkeys: 1..9 toggle/select, Enter submits
-        components.html(
-            """
-            <script>
-            (function(){
-              function send(v){
-                const inputs = Array.from(parent.document.querySelectorAll('input'));
-                const target = inputs.find(el => el.getAttribute('aria-label') === 'Hotkey');
-                if(!target) return;
-                target.value = v;
-                target.dispatchEvent(new Event('input', { bubbles: true }));
-              }
-              window.addEventListener('keydown', function(e){
-                if (e.isComposing) return;
-                const tag = (e.target && e.target.tagName || '').toLowerCase();
-                if (tag === 'input' || tag === 'textarea') return;
-                if (e.key === 'Enter') { send('ENTER'); }
-                else if (/^[1-9]$/.test(e.key)) { send('NUM:' + e.key); }
-              });
-            })();
-            </script>
-            """,
-            height=0,
-        )
-
-        hk = st.session_state.get("hk", "")
-        if hk:
-            if hk.startswith("NUM:"):
-                try:
-                    idx = int(hk.split(":", 1)[1]) - 1
-                    if 0 <= idx < len(letters):
-                        if is_multi:
-                            cur = set(st.session_state.selections.get(q.number, []))
-                            letter = letters[idx]
-                            if letter in cur:
-                                cur.remove(letter)
-                            else:
-                                cur.add(letter)
-                            st.session_state.selections[q.number] = list(cur)
-                        else:
-                            st.session_state.selections[q.number] = [letters[idx]]
-                    st.session_state.hk = ""
-                    st.rerun()
-                except Exception:
-                    st.session_state.hk = ""
-            elif hk == "ENTER":
-                st.session_state.hk = ""
-                sel = st.session_state.selections.get(q.number, selected_letters)
-                do_submit(sel)
-
         # Copy prompt
         st.markdown("---")
         st.markdown("**Need help understanding this question?**")
@@ -288,7 +231,6 @@ def main():
             st.markdown(f"**Your answer:** {', '.join(ans['selected']) or '—'}")
             st.markdown(f"**Correct answer:** {', '.join(ans['correct'])}")
 
-            # Deep-link prompt to ChatGPT
             q_for_prompt = Question(
                 number=ans["number"],
                 question=ans["question"],
@@ -304,7 +246,6 @@ def main():
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
             st.rerun()
-
 
 if __name__ == "__main__":
     main()
